@@ -1,12 +1,13 @@
 :root {
   color-scheme: light;
-  --paper: #f5f7fa;
-  --ink: #192c45;
-  --blue: #235d99;
-  --blue-dark: #164776;
-  --muted: #566a7f;
-  --line: #cbd8e4;
-  --wash: #e8eff6;
+  --paper: #f6f3ea;
+  --ink: #353b40;
+  --title: #101e36;
+  --blue: #28539b;
+  --blue-dark: #1d3969;
+  --muted: #59636d;
+  --line: #c8d3d5;
+  --wash: #e9eff0;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 19px;
   line-height: 1.75;
@@ -17,7 +18,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
-::selection { background: #c9dff3; }
+::selection { background: #c9dde3; }
 a { color: var(--blue-dark); text-underline-offset: .2em; }
 a:hover { color: var(--blue); }
 a:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
@@ -41,7 +42,7 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
   font: 600 .8rem/1.5 'DM Sans', Arial, sans-serif;
 }
 .site-nav a { text-decoration: none; }
-.wordmark { font: 700 1.25rem/1 'Fraunces', Georgia, serif; color: var(--ink); }
+.wordmark { font: 700 1.25rem/1 'Fraunces', Georgia, serif; color: var(--title); }
 .dot { color: var(--blue); }
 .nav-index { color: var(--muted); }
 .nav-index span { color: var(--blue); margin-left: .25rem; }
@@ -55,16 +56,25 @@ main { min-height: 60vh; }
 .folio { color: var(--blue); margin: 0; }
 h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; }
 
-.intro { margin: 4.2rem 0; padding-top: 1.15rem; border-top: 3px solid var(--blue); }
+.intro {
+  margin: 4.2rem 0;
+  padding-top: 1.15rem;
+  border-top: 3px solid var(--blue);
+  background: radial-gradient(ellipse 65% 80% at 84% 60%, rgba(89, 145, 181, .08) 0%, transparent 78%);
+}
 .intro-main { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; margin-top: 1.5rem; }
 .intro h1 {
   font-size: clamp(4rem, 7.5vw, 5.8rem);
   line-height: .95;
   letter-spacing: -.075em;
   margin: 0 0 -.08em -.05em;
-  color: var(--ink);
+  color: var(--title);
 }
 .intro h1 span { color: var(--blue); }
+.swell-mark { display: block; width: 11rem; height: auto; margin: .5rem 0 -1rem auto; fill: none; stroke: var(--blue); stroke-width: 1.6; stroke-linecap: round; }
+.swell-mark path:nth-child(1) { opacity: .75; }
+.swell-mark path:nth-child(2) { opacity: .5; }
+.swell-mark path:nth-child(3) { opacity: .3; }
 .intro-count {
   display: flex;
   flex-direction: column;
@@ -82,7 +92,7 @@ h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; }
 .essay-list { list-style: none; padding: 0; margin: 0 0 7rem; border-top: 1px solid var(--ink); }
 .essay-list li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1rem; padding: 1.3rem 0 1.5rem; border-bottom: 1px solid var(--line); }
 .essay-number { color: var(--blue); padding-top: .55rem; }
-.essay-entry a { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5rem; text-decoration: none; color: var(--ink); font: 600 clamp(1.15rem, 2.2vw, 1.5rem)/1.3 'Fraunces', Georgia, serif; }
+.essay-entry a { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5rem; text-decoration: none; color: var(--title); font: 600 clamp(1.15rem, 2.2vw, 1.5rem)/1.3 'Fraunces', Georgia, serif; }
 .essay-entry a:hover span:first-child { text-decoration: underline; text-decoration-color: var(--blue); text-underline-offset: .18em; }
 .essay-arrow { color: var(--blue); font: 500 1.1rem/1 'DM Sans', Arial, sans-serif; transition: transform .2s ease; }
 .essay-entry a:hover .essay-arrow { transform: translate(2px, -2px); }
@@ -93,7 +103,7 @@ h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; }
 .back { color: var(--blue-dark); text-decoration: none; }
 .back:hover { text-decoration: underline; }
 .essay-header .folio { margin-top: 2.8rem; }
-.essay-header h1 { font-size: clamp(2.3rem, 4.5vw, 3.4rem); line-height: 1.12; letter-spacing: -.045em; margin: .6em 0 .8em; }
+.essay-header h1 { font-size: clamp(2.3rem, 4.5vw, 3.4rem); line-height: 1.12; letter-spacing: -.045em; margin: .6em 0 .8em; color: var(--title); }
 .essay-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 2rem; padding: 1rem 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); color: var(--muted); letter-spacing: .03em; text-transform: none; }
 .essay-author { color: var(--blue-dark); }
 .essay-dates { display: grid; gap: .3rem; }
@@ -104,6 +114,7 @@ h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; }
 .prose { overflow-wrap: break-word; font-size: 1rem; line-height: 1.75; }
 .prose h2 { font-size: 1.65rem; line-height: 1.3; margin: 2em 0 .5em; }
 .prose h3 { font-size: 1.25rem; line-height: 1.3; margin: 1.8em 0 .4em; }
+.prose h2, .prose h3, .prose strong { color: var(--title); }
 .prose p, .prose ul, .prose ol, .prose blockquote { margin: 0 0 1.3em; }
 .prose li { margin-bottom: .35em; }
 .prose blockquote { margin-left: 0; padding-left: 1.1em; border-left: 2px solid var(--blue); color: var(--muted); }
@@ -124,6 +135,7 @@ footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.5r
   .intro { margin: 3.5rem 0 4rem; }
   .intro-main { display: block; margin-top: 2rem; }
   .intro h1 { font-size: clamp(3.4rem, 12vw, 4.4rem); }
+  .intro .swell-mark { width: 8.5rem; }
   .intro-count { flex-direction: row; align-items: baseline; gap: .5rem; width: fit-content; margin: 1.8rem 0 0 auto; padding: .5rem 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .intro-count span { font-size: 2.2rem; }
   .essay-list li { grid-template-columns: 2rem minmax(0, 1fr); gap: .5rem; }
