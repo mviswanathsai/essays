@@ -5,6 +5,9 @@ baseurl: /essays
 timezone: Asia/Kolkata
 permalink: /:title/
 
+kramdown:
+  hard_wrap: true
+
 plugins:
   - jekyll-titles-from-headings
 
