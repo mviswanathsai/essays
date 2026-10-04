@@ -1,5 +1,7 @@
 # Essays
 
+[Read the essays](https://mviswanathsai.github.io/essays/).
+
 A small GitHub Pages site for selected writing. The site lives in its own
 repository; only essays copied here become public.
 
