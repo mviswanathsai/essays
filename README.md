@@ -19,22 +19,24 @@ For a published note, an **Unpublish active essay** cloud-off icon appears in th
 left ribbon. It removes only the public copy. The vault note stays as it was.
 Publishing again starts a new publication time.
 
-If you wrote an essay earlier, add an optional `written` date property to the
-Obsidian note (using **Add property** or by typing the front matter yourself):
+Add optional `label` and `written` properties to an Obsidian note using **Add
+property** or by typing the front matter yourself:
 
 ```markdown
 ---
+label: Note to self
 written: 2026-09-15
 ---
 
 # The essay title
 ```
 
-Use the day you consider the essay written, in `YYYY-MM-DD` format. The essay
-page shows both dates when the written day differs from the publication day;
-otherwise it shows only Published. The plugin sets the publication date on the
-public copy and keeps it when you update the essay. The index stays ordered by
-publication date.
+The label appears above that essay's title; without one, the page says Essay.
+For `written`, use the day you consider the essay written, in `YYYY-MM-DD`
+format. The essay page shows both dates when the written day differs from the
+publication day; otherwise it shows only Published. The plugin sets the
+publication date on the public copy and keeps it when you update the essay.
+The index stays ordered by publication date.
 
 For manual publishing, copy one selected Markdown file to
 `_posts/YYYY-MM-DD-short-name.md`, using the date you want shown on the site.

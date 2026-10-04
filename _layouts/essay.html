@@ -5,7 +5,7 @@ layout: default
 <article class="essay">
   <header class="essay-header">
     <a class="back" href="{{ '/' | relative_url }}">← Index</a>
-    <p class="folio">Essay / {{ page.date | date: '%Y' }}</p>
+    <p class="folio">{% if page.label %}{{ page.label | escape }}{% else %}Essay{% endif %} / {{ page.date | date: '%Y' }}</p>
     <h1>{{ page.title | escape }}</h1>
     {% assign written_day = page.written | date: '%Y-%m-%d' %}
     {% assign published_day = page.date | date: '%Y-%m-%d' %}

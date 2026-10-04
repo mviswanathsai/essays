@@ -1,5 +1,6 @@
 ---
 date: 2026-10-04T20:12:38+05:30
+label: Note to self
 ---
 
 # Beware, Activity and Productivity are eerily similar. 
