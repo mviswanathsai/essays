@@ -1,0 +1,22 @@
+title: Viswa
+description: Essays and notes by Viswanath Sai Muthu.
+url: https://mviswanathsai.github.io
+baseurl: /essays
+permalink: /:title/
+
+plugins:
+  - jekyll-titles-from-headings
+
+titles_from_headings:
+  collections: true
+  strip_title: true
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: essay
+
+exclude:
+  - README.md

@@ -1,0 +1,23 @@
+---
+layout: default
+title: Essays
+---
+
+<header class="intro">
+  <p class="eyebrow">A record of changing my mind</p>
+  <h1>Essays</h1>
+  <p>Thoughts worth keeping, written as I understood them at the time.</p>
+</header>
+
+{% if site.posts.size > 0 %}
+<ol class="essay-list">
+  {% for post in site.posts %}
+  <li>
+    <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+    <time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%b %-d, %Y' }}</time>
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<p class="empty">The first essay is still being chosen.</p>
+{% endif %}
