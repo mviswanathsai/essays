@@ -1,0 +1,9 @@
+{
+  "id": "essay-publisher",
+  "name": "Publish Essay",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Publish the active note to your essays site.",
+  "author": "Viswanath Sai Muthu",
+  "isDesktopOnly": true
+}
