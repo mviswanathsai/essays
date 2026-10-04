@@ -34,3 +34,14 @@ GitHub Pages rebuilds the site on each push. No index to edit.
 
 GitHub Pages runs Jekyll for you. Its built-in title-from-heading plugin lets
 the posts stay plain Markdown, including files copied from a local workspace.
+
+The Obsidian plugin uses a bundled `main.js`. Rebuild it after editing `src.js`
+or `publish.js`:
+
+```sh
+npx --yes esbuild@0.25.5 obsidian-plugin/src.js --bundle --platform=node --format=cjs --target=es2021 --external:obsidian --outfile=obsidian-plugin/main.js
+```
+
+Install `main.js` and `manifest.json` in a real directory named
+`.obsidian/plugins/essay-publisher/` inside the vault. The publisher keeps its
+local mapping in the ignored `~/essays/obsidian-plugin/data.json` file.

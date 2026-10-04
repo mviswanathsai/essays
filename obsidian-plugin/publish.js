@@ -6,7 +6,7 @@ const { promisify } = require('node:util');
 
 const exec = promisify(execFile);
 const defaultRepo = path.join(os.homedir(), 'essays');
-const defaultState = path.join(__dirname, 'data.json');
+const defaultState = path.join(defaultRepo, 'obsidian-plugin', 'data.json');
 
 async function git(repo, ...args) {
   try {

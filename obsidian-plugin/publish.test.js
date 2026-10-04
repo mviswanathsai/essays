@@ -5,9 +5,35 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
+const vm = require('node:vm');
 const { publishEssay, moveNote } = require('./publish');
 
 const exec = promisify(execFile);
+
+test('installed bundle loads and registers the publish action', async () => {
+  const mod = { exports: {} };
+  const actions = [];
+  class Plugin {
+    constructor() {
+      this.app = { workspace: { getActiveViewOfType: () => null }, vault: { on: () => null } };
+    }
+    addRibbonIcon(icon, label, action) { actions.push({ icon, label, action }); }
+    addCommand(command) { actions.push(command); }
+    registerEvent() {}
+  }
+  const code = await fs.readFile(path.join(__dirname, 'main.js'), 'utf8');
+  vm.runInNewContext(code, {
+    module: mod,
+    require(id) {
+      if (id === 'obsidian') return { Plugin, MarkdownView: class {}, Notice: class {} };
+      assert.ok(id.startsWith('node:'), `Unexpected unbundled import: ${id}`);
+      return require(id);
+    },
+  });
+  await new mod.exports().onload();
+  assert.equal(actions[0].label, 'Publish active essay');
+  assert.equal(actions[1].id, 'publish-active-essay');
+});
 
 test('publishes only the chosen note and updates its original URL', async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'essay-publisher-'));
