@@ -14,7 +14,7 @@ title: Essays
   {% for post in site.posts %}
   <li>
     <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-    <time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%b %-d, %Y' }}</time>
+    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y · %-I:%M %p %Z' }}</time>
   </li>
   {% endfor %}
 </ol>

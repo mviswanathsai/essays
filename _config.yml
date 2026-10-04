@@ -2,6 +2,7 @@ title: Viswa
 description: Essays and notes by Viswanath Sai Muthu.
 url: https://mviswanathsai.github.io
 baseurl: /essays
+timezone: Asia/Kolkata
 permalink: /:title/
 
 plugins:

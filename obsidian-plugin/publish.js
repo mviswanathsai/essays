@@ -30,6 +30,13 @@ function slug(title) {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'essay';
 }
 
+function withPublishedDate(content, date) {
+  const frontmatter = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!frontmatter) return `---\ndate: ${date}\n---\n\n${content}`;
+  const fields = frontmatter[1].split(/\r?\n/).filter(line => !/^date:\s*/.test(line)).join('\n');
+  return `---\ndate: ${date}\n${fields ? `${fields}\n` : ''}---\n${content.slice(frontmatter[0].length)}`;
+}
+
 async function publishEssay(key, content, { repo = defaultRepo, stateFile = defaultState } = {}) {
   const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '').trimStart();
   const title = body.match(/^# (.+?)(?:\r?\n|$)/)?.[1]?.trim();
@@ -46,12 +53,17 @@ async function publishEssay(key, content, { repo = defaultRepo, stateFile = defa
   const target = path.join(repo, relative);
 
   await git(repo, 'pull', '--ff-only');
+  let publishedAt = today.toISOString();
   try {
-    await fs.access(target);
+    const published = await fs.readFile(target, 'utf8');
     if (!previous) throw new Error(`An essay already exists at ${name}. Change its title first.`);
     if (await git(repo, 'status', '--porcelain', '--', relative)) {
       throw new Error('The local essay has unsaved Git changes. Resolve them before publishing.');
     }
+    publishedAt = published.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1]
+      ?.match(/^date:\s*(.+)$/m)?.[1]?.trim()
+      || (await git(repo, 'log', '--reverse', '--format=%aI', '--', relative)).split('\n')[0]
+      || publishedAt;
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
   }
@@ -60,7 +72,7 @@ async function publishEssay(key, content, { repo = defaultRepo, stateFile = defa
     state.posts[key] = name;
     await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + '\n');
   }
-  await fs.writeFile(target, content);
+  await fs.writeFile(target, withPublishedDate(content, publishedAt));
   await git(repo, 'add', '--', relative);
   if (await git(repo, 'diff', '--cached', '--name-only', '--', relative)) {
     await git(repo, 'commit', '--only', '-m', `Publish ${title}`, '--', relative);

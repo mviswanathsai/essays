@@ -57,18 +57,23 @@ test('publishes only the chosen note and updates its original URL', async () => 
     await fs.writeFile(path.join(repo, 'private.md'), 'not for publication');
     await git('-C', repo, 'add', 'private.md');
 
+    const clickedAt = Date.now();
     const url = await publishEssay('draft.md', '# First thought\n\nVersion one.\n', { repo, stateFile });
     const state = JSON.parse(await fs.readFile(stateFile, 'utf8'));
     const target = path.join(repo, '_posts', state.posts['draft.md']);
+    const firstCopy = await fs.readFile(target, 'utf8');
+    const publishedAt = firstCopy.match(/^---\ndate: (.+)\n---/)[1];
     assert.equal(url, `https://mviswanathsai.github.io/essays/${state.posts['draft.md'].slice(11, -3)}/`);
-    assert.equal(await fs.readFile(target, 'utf8'), '# First thought\n\nVersion one.\n');
+    assert.ok(Date.parse(publishedAt) >= clickedAt && Date.parse(publishedAt) <= Date.now());
+    assert.equal(firstCopy, `---\ndate: ${publishedAt}\n---\n\n# First thought\n\nVersion one.\n`);
     assert.equal((await git('-C', repo, 'show', '--pretty=format:', '--name-only', 'HEAD')).stdout.trim(), `_posts/${state.posts['draft.md']}`);
     assert.match((await git('-C', repo, 'status', '--porcelain', '--', 'private.md')).stdout, /^A /);
 
     await assert.rejects(publishEssay('another.md', '# First thought\n\nOther note.\n', { repo, stateFile }), /already exists/);
     await moveNote('draft.md', 'renamed.md', { stateFile });
-    assert.equal(await publishEssay('renamed.md', '# New title\n\nVersion two.\n', { repo, stateFile }), url);
-    assert.equal(await fs.readFile(target, 'utf8'), '# New title\n\nVersion two.\n');
+    const revision = '---\ndate: 1999-01-01\ncategory: thoughts\n---\n# New title\n\nVersion two.\n';
+    assert.equal(await publishEssay('renamed.md', revision, { repo, stateFile }), url);
+    assert.equal(await fs.readFile(target, 'utf8'), `---\ndate: ${publishedAt}\ncategory: thoughts\n---\n# New title\n\nVersion two.\n`);
     assert.equal((await git('-C', repo, 'rev-list', '--count', 'HEAD')).stdout.trim(), '3');
   } finally {
     await fs.rm(dir, { recursive: true, force: true });

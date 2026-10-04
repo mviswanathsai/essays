@@ -1,3 +1,7 @@
+---
+date: 2026-10-04T20:12:38+05:30
+---
+
 # Beware, Activity and Productivity are eerily similar. 
 My co-founder and I united with the idea to extend human capabilities in jobs that keep the world running: manufacturing, electricity, utilities etc. It's been 3 weeks, and I have lost conviction in the market.
 

@@ -32,6 +32,20 @@ var require_publish = __commonJS({
     function slug(title) {
       return title.normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "essay";
     }
+    function withPublishedDate(content, date) {
+      const frontmatter = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+      if (!frontmatter) return `---
+date: ${date}
+---
+
+${content}`;
+      const fields = frontmatter[1].split(/\r?\n/).filter((line) => !/^date:\s*/.test(line)).join("\n");
+      return `---
+date: ${date}
+${fields ? `${fields}
+` : ""}---
+${content.slice(frontmatter[0].length)}`;
+    }
     async function publishEssay2(key, content, { repo = defaultRepo, stateFile = defaultState } = {}) {
       const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "").trimStart();
       const title = body.match(/^# (.+?)(?:\r?\n|$)/)?.[1]?.trim();
@@ -49,12 +63,14 @@ var require_publish = __commonJS({
       const relative = `_posts/${name}`;
       const target = path.join(repo, relative);
       await git(repo, "pull", "--ff-only");
+      let publishedAt = today.toISOString();
       try {
-        await fs.access(target);
+        const published = await fs.readFile(target, "utf8");
         if (!previous) throw new Error(`An essay already exists at ${name}. Change its title first.`);
         if (await git(repo, "status", "--porcelain", "--", relative)) {
           throw new Error("The local essay has unsaved Git changes. Resolve them before publishing.");
         }
+        publishedAt = published.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1]?.match(/^date:\s*(.+)$/m)?.[1]?.trim() || (await git(repo, "log", "--reverse", "--format=%aI", "--", relative)).split("\n")[0] || publishedAt;
       } catch (error) {
         if (error.code !== "ENOENT") throw error;
       }
@@ -62,7 +78,7 @@ var require_publish = __commonJS({
         state.posts[key] = name;
         await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + "\n");
       }
-      await fs.writeFile(target, content);
+      await fs.writeFile(target, withPublishedDate(content, publishedAt));
       await git(repo, "add", "--", relative);
       if (await git(repo, "diff", "--cached", "--name-only", "--", relative)) {
         await git(repo, "commit", "--only", "-m", `Publish ${title}`, "--", relative);
