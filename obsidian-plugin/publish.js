@@ -37,6 +37,10 @@ function withPublishedDate(content, date) {
   return `---\ndate: ${date}\n${fields ? `${fields}\n` : ''}---\n${content.slice(frontmatter[0].length)}`;
 }
 
+async function isPublished(key, { stateFile = defaultState } = {}) {
+  return !!key && !!(await readState(stateFile)).posts[key];
+}
+
 async function publishEssay(key, content, { repo = defaultRepo, stateFile = defaultState } = {}) {
   const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '').trimStart();
   const title = body.match(/^# (.+?)(?:\r?\n|$)/)?.[1]?.trim();
@@ -72,6 +76,7 @@ async function publishEssay(key, content, { repo = defaultRepo, stateFile = defa
     state.posts[key] = name;
     await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + '\n');
   }
+  await fs.mkdir(path.join(repo, '_posts'), { recursive: true });
   await fs.writeFile(target, withPublishedDate(content, publishedAt));
   await git(repo, 'add', '--', relative);
   if (await git(repo, 'diff', '--cached', '--name-only', '--', relative)) {
@@ -79,6 +84,29 @@ async function publishEssay(key, content, { repo = defaultRepo, stateFile = defa
   }
   await git(repo, 'push');
   return `https://mviswanathsai.github.io/essays/${name.slice(11, -3)}/`;
+}
+
+async function unpublishEssay(key, { repo = defaultRepo, stateFile = defaultState } = {}) {
+  const state = await readState(stateFile);
+  const name = state.posts[key];
+  if (!name) throw new Error('This note is not published.');
+  if (!/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$/.test(name)) throw new Error('Invalid saved essay path.');
+  const relative = `_posts/${name}`;
+
+  await git(repo, 'pull', '--ff-only');
+  if (await git(repo, 'status', '--porcelain', '--', relative)) {
+    throw new Error('The local essay has unsaved Git changes. Resolve them before unpublishing.');
+  }
+  try {
+    await fs.access(path.join(repo, relative));
+    await git(repo, 'rm', '--', relative);
+    await git(repo, 'commit', '--only', '-m', `Unpublish ${name.slice(11, -3)}`, '--', relative);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  await git(repo, 'push');
+  delete state.posts[key];
+  await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + '\n');
 }
 
 async function moveNote(oldPath, newPath, { stateFile = defaultState } = {}) {
@@ -89,4 +117,4 @@ async function moveNote(oldPath, newPath, { stateFile = defaultState } = {}) {
   await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + '\n');
 }
 
-module.exports = { publishEssay, moveNote };
+module.exports = { publishEssay, unpublishEssay, isPublished, moveNote };

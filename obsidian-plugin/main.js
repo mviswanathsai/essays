@@ -46,6 +46,9 @@ ${fields ? `${fields}
 ` : ""}---
 ${content.slice(frontmatter[0].length)}`;
     }
+    async function isPublished2(key, { stateFile = defaultState } = {}) {
+      return !!key && !!(await readState(stateFile)).posts[key];
+    }
     async function publishEssay2(key, content, { repo = defaultRepo, stateFile = defaultState } = {}) {
       const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "").trimStart();
       const title = body.match(/^# (.+?)(?:\r?\n|$)/)?.[1]?.trim();
@@ -78,6 +81,7 @@ ${content.slice(frontmatter[0].length)}`;
         state.posts[key] = name;
         await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + "\n");
       }
+      await fs.mkdir(path.join(repo, "_posts"), { recursive: true });
       await fs.writeFile(target, withPublishedDate(content, publishedAt));
       await git(repo, "add", "--", relative);
       if (await git(repo, "diff", "--cached", "--name-only", "--", relative)) {
@@ -86,6 +90,27 @@ ${content.slice(frontmatter[0].length)}`;
       await git(repo, "push");
       return `https://mviswanathsai.github.io/essays/${name.slice(11, -3)}/`;
     }
+    async function unpublishEssay2(key, { repo = defaultRepo, stateFile = defaultState } = {}) {
+      const state = await readState(stateFile);
+      const name = state.posts[key];
+      if (!name) throw new Error("This note is not published.");
+      if (!/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$/.test(name)) throw new Error("Invalid saved essay path.");
+      const relative = `_posts/${name}`;
+      await git(repo, "pull", "--ff-only");
+      if (await git(repo, "status", "--porcelain", "--", relative)) {
+        throw new Error("The local essay has unsaved Git changes. Resolve them before unpublishing.");
+      }
+      try {
+        await fs.access(path.join(repo, relative));
+        await git(repo, "rm", "--", relative);
+        await git(repo, "commit", "--only", "-m", `Unpublish ${name.slice(11, -3)}`, "--", relative);
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
+      await git(repo, "push");
+      delete state.posts[key];
+      await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + "\n");
+    }
     async function moveNote2(oldPath, newPath, { stateFile = defaultState } = {}) {
       const state = await readState(stateFile);
       if (!state.posts[oldPath]) return;
@@ -93,16 +118,28 @@ ${content.slice(frontmatter[0].length)}`;
       delete state.posts[oldPath];
       await fs.writeFile(stateFile, JSON.stringify(state, null, 2) + "\n");
     }
-    module2.exports = { publishEssay: publishEssay2, moveNote: moveNote2 };
+    module2.exports = { publishEssay: publishEssay2, unpublishEssay: unpublishEssay2, isPublished: isPublished2, moveNote: moveNote2 };
   }
 });
 
 // obsidian-plugin/src.js
 var { Plugin, MarkdownView, Notice } = require("obsidian");
-var { publishEssay, moveNote } = require_publish();
+var { publishEssay, unpublishEssay, isPublished, moveNote } = require_publish();
 module.exports = class EssayPublisher extends Plugin {
   async onload() {
     let busy = false;
+    let unpublishIcon;
+    const refresh = async () => {
+      const file = this.app.workspace.getActiveViewOfType(MarkdownView)?.file;
+      try {
+        const published = await isPublished(file?.path);
+        if (file === this.app.workspace.getActiveViewOfType(MarkdownView)?.file) {
+          unpublishIcon.style.display = published ? "" : "none";
+        }
+      } catch (error) {
+        new Notice(`Essay status: ${error.message}`);
+      }
+    };
     const publish = async () => {
       if (busy) return;
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -120,12 +157,38 @@ module.exports = class EssayPublisher extends Plugin {
         new Notice(`Publish failed: ${error.message}`, 1e4);
       } finally {
         busy = false;
+        refresh();
+      }
+    };
+    const unpublish = async () => {
+      if (busy) return;
+      const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!view?.file) {
+        new Notice("Open a note to unpublish it.");
+        return;
+      }
+      busy = true;
+      new Notice("Unpublishing essay\u2026");
+      try {
+        await unpublishEssay(view.file.path);
+        new Notice("Essay unpublished. The vault note is unchanged.");
+      } catch (error) {
+        new Notice(`Unpublish failed: ${error.message}`, 1e4);
+      } finally {
+        busy = false;
+        refresh();
       }
     };
     this.addRibbonIcon("upload", "Publish active essay", publish);
+    unpublishIcon = this.addRibbonIcon("cloud-off", "Unpublish active essay", unpublish);
+    unpublishIcon.style.display = "none";
     this.addCommand({ id: "publish-active-essay", name: "Publish active essay", callback: publish });
+    this.addCommand({ id: "unpublish-active-essay", name: "Unpublish active essay", callback: unpublish });
+    this.registerEvent(this.app.workspace.on("file-open", refresh));
+    this.registerEvent(this.app.workspace.on("active-leaf-change", refresh));
     this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
-      moveNote(oldPath, file.path).catch((error) => new Notice(`Essay link: ${error.message}`));
+      moveNote(oldPath, file.path).then(refresh).catch((error) => new Notice(`Essay link: ${error.message}`));
     }));
+    this.app.workspace.onLayoutReady(refresh);
   }
 };

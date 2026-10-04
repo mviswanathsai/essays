@@ -6,18 +6,27 @@ const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const vm = require('node:vm');
-const { publishEssay, moveNote } = require('./publish');
+const { publishEssay, unpublishEssay, isPublished, moveNote } = require('./publish');
 
 const exec = promisify(execFile);
 
 test('installed bundle loads and registers the publish action', async () => {
   const mod = { exports: {} };
   const actions = [];
+  const icons = [];
+  const listeners = {};
+  let activeView = null;
   class Plugin {
     constructor() {
-      this.app = { workspace: { getActiveViewOfType: () => null }, vault: { on: () => null } };
+      this.app = { workspace: { getActiveViewOfType: () => activeView,
+        on: (event, callback) => { listeners[event] = callback; return null; },
+        onLayoutReady: callback => callback() }, vault: { on: () => null } };
     }
-    addRibbonIcon(icon, label, action) { actions.push({ icon, label, action }); }
+    addRibbonIcon(icon, label, action) {
+      const item = { icon, label, action, style: { display: '' } };
+      icons.push(item);
+      return item;
+    }
     addCommand(command) { actions.push(command); }
     registerEvent() {}
   }
@@ -27,12 +36,28 @@ test('installed bundle loads and registers the publish action', async () => {
     require(id) {
       if (id === 'obsidian') return { Plugin, MarkdownView: class {}, Notice: class {} };
       assert.ok(id.startsWith('node:'), `Unexpected unbundled import: ${id}`);
+      if (id === 'node:fs/promises') return { ...fs, readFile: (file, ...args) =>
+        String(file).endsWith('/obsidian-plugin/data.json')
+          ? Promise.resolve(JSON.stringify({ posts: { 'draft.md': '2026-10-04-draft.md' } }))
+          : fs.readFile(file, ...args) };
       return require(id);
     },
   });
   await new mod.exports().onload();
-  assert.equal(actions[0].label, 'Publish active essay');
-  assert.equal(actions[1].id, 'publish-active-essay');
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(icons[0].label, 'Publish active essay');
+  assert.equal(icons[1].label, 'Unpublish active essay');
+  assert.equal(icons[1].style.display, 'none');
+  assert.equal(actions[0].id, 'publish-active-essay');
+  assert.equal(actions[1].id, 'unpublish-active-essay');
+  activeView = { file: { path: 'draft.md' } };
+  listeners['file-open']();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(icons[1].style.display, '');
+  activeView = null;
+  listeners['active-leaf-change']();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(icons[1].style.display, 'none');
 });
 
 test('publishes only the chosen note and updates its original URL', async () => {
@@ -75,6 +100,23 @@ test('publishes only the chosen note and updates its original URL', async () => 
     assert.equal(await publishEssay('renamed.md', revision, { repo, stateFile }), url);
     assert.equal(await fs.readFile(target, 'utf8'), `---\ndate: ${publishedAt}\ncategory: thoughts\n---\n# New title\n\nVersion two.\n`);
     assert.equal((await git('-C', repo, 'rev-list', '--count', 'HEAD')).stdout.trim(), '3');
+
+    assert.equal(await isPublished('renamed.md', { stateFile }), true);
+    await fs.appendFile(target, 'Local edit.\n');
+    await assert.rejects(unpublishEssay('renamed.md', { repo, stateFile }), /unsaved Git changes/);
+    await fs.writeFile(target, `---\ndate: ${publishedAt}\ncategory: thoughts\n---\n# New title\n\nVersion two.\n`);
+    await unpublishEssay('renamed.md', { repo, stateFile });
+    assert.equal(await isPublished('renamed.md', { stateFile }), false);
+    await assert.rejects(fs.access(target), { code: 'ENOENT' });
+    await assert.rejects(git('--git-dir', remote, 'show', `main:_posts/${state.posts['draft.md']}`));
+    assert.match((await git('-C', repo, 'status', '--porcelain', '--', 'private.md')).stdout, /^A /);
+    assert.equal((await git('-C', repo, 'rev-list', '--count', 'HEAD')).stdout.trim(), '4');
+
+    const republishedAt = Date.now();
+    assert.notEqual(await publishEssay('renamed.md', '# New title\n\nBack online.\n', { repo, stateFile }), url);
+    const newState = JSON.parse(await fs.readFile(stateFile, 'utf8'));
+    const newPost = await fs.readFile(path.join(repo, '_posts', newState.posts['renamed.md']), 'utf8');
+    assert.ok(Date.parse(newPost.match(/^---\ndate: (.+)\n---/)[1]) >= republishedAt);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

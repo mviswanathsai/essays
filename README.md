@@ -15,6 +15,9 @@ Git credentials. It is desktop-only and stores the note-to-essay mapping in
 its ignored `obsidian-plugin/data.json` file.
 The site shows the time of the first Publish click in India time. Later edits
 keep that original publication time, even if the note has an older `date` field.
+For a published note, an **Unpublish active essay** cloud-off icon appears in the
+left ribbon. It removes only the public copy. The vault note stays as it was.
+Publishing again starts a new publication time.
 
 For manual publishing, copy one selected Markdown file to
 `_posts/YYYY-MM-DD-short-name.md`, using the date you want shown on the site.
