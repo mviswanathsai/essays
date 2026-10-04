@@ -4,17 +4,23 @@ title: Essays
 ---
 
 <header class="intro">
-  <p class="eyebrow">A record of changing my mind</p>
-  <h1>Essays</h1>
-  <p>Thoughts worth keeping, written as I understood them at the time.</p>
+  <p class="folio">Writing / Viswanath Sai Muthu</p>
+  <div class="intro-main">
+    <h1>Essays<span aria-hidden="true">.</span></h1>
+    <p class="intro-count"><span>{{ site.posts.size }}</span> {% if site.posts.size == 1 %}essay{% else %}essays{% endif %}</p>
+  </div>
 </header>
 
+<div class="list-heading"><span>Published</span><span>Newest first</span></div>
 {% if site.posts.size > 0 %}
 <ol class="essay-list">
   {% for post in site.posts %}
   <li>
-    <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y · %-I:%M %p %Z' }}</time>
+    <span class="essay-number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+    <div class="essay-entry">
+      <a href="{{ post.url | relative_url }}"><span>{{ post.title | escape }}</span><span class="essay-arrow" aria-hidden="true">↗</span></a>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y · %-I:%M %p %Z' }}</time>
+    </div>
   </li>
   {% endfor %}
 </ol>

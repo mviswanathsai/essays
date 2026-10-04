@@ -2,12 +2,26 @@
 layout: default
 ---
 
-<article>
+<article class="essay">
   <header class="essay-header">
-    <a class="back" href="{{ '/' | relative_url }}">← All essays</a>
+    <a class="back" href="{{ '/' | relative_url }}">← Index</a>
+    <p class="folio">Essay / {{ page.date | date: '%Y' }}</p>
     <h1>{{ page.title | escape }}</h1>
-    <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%B %-d, %Y · %-I:%M %p %Z' }}</time>
+    {% assign written_day = page.written | date: '%Y-%m-%d' %}
+    {% assign published_day = page.date | date: '%Y-%m-%d' %}
+    <div class="essay-meta">
+      <span class="essay-author">Viswanath Sai Muthu</span>
+      <div class="essay-dates">
+        {% if page.written and written_day != published_day %}
+        <div><span>Written</span><time datetime="{{ written_day }}">{{ page.written | date: '%B %-d, %Y' }}</time></div>
+        {% endif %}
+        <div><span>Published</span><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%B %-d, %Y · %-I:%M %p %Z' }}</time></div>
+      </div>
+    </div>
   </header>
-  <div class="prose">{{ content }}</div>
-  <a class="back end-link" href="{{ '/' | relative_url }}">← All essays</a>
+  <div class="reading-layout">
+    <div class="reading-rail" aria-hidden="true"><span>V / E</span></div>
+    <div class="prose">{{ content }}</div>
+  </div>
+  <a class="back end-link" href="{{ '/' | relative_url }}">← Index</a>
 </article>
