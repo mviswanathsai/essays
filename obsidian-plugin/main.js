@@ -9,12 +9,11 @@ var require_publish = __commonJS({
     var fs = require("node:fs/promises");
     var path = require("node:path");
     var os = require("node:os");
-    var { execFile } = require("node:child_process");
-    var { promisify } = require("node:util");
-    var exec = promisify(execFile);
     var defaultRepo = path.join(os.homedir(), "essays");
     var defaultState = path.join(defaultRepo, "obsidian-plugin", "data.json");
+    var exec;
     async function git(repo, ...args) {
+      exec ||= require("node:util").promisify(require("node:child_process").execFile);
       try {
         return (await exec("git", ["-C", repo, ...args])).stdout.trim();
       } catch (error) {

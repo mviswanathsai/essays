@@ -35,6 +35,7 @@ test('installed bundle loads and registers the publish action', async () => {
     module: mod,
     require(id) {
       if (id === 'obsidian') return { Plugin, MarkdownView: class {}, Notice: class {} };
+      if (id === 'node:child_process') throw new Error('Git must not load until publishing');
       assert.ok(id.startsWith('node:'), `Unexpected unbundled import: ${id}`);
       if (id === 'node:fs/promises') return { ...fs, readFile: (file, ...args) =>
         String(file).endsWith('/obsidian-plugin/data.json')

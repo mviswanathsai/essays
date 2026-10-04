@@ -1,14 +1,13 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const os = require('node:os');
-const { execFile } = require('node:child_process');
-const { promisify } = require('node:util');
 
-const exec = promisify(execFile);
 const defaultRepo = path.join(os.homedir(), 'essays');
 const defaultState = path.join(defaultRepo, 'obsidian-plugin', 'data.json');
 
+let exec;
 async function git(repo, ...args) {
+  exec ||= require('node:util').promisify(require('node:child_process').execFile);
   try {
     return (await exec('git', ['-C', repo, ...args])).stdout.trim();
   } catch (error) {
