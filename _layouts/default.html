@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f3ea">
-    <meta name="description" content="{{ site.description | escape }}">
-    <title>{{ page.title | escape }} · {{ site.title | escape }}</title>
+    {% seo %}
     <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,10 +16,13 @@
     <div class="page">
       <nav class="site-nav" aria-label="Main navigation">
         <a class="wordmark" href="{{ '/' | relative_url }}">Viswa<span class="dot">.</span></a>
-        <a class="nav-index" href="{{ '/' | relative_url }}">Index <span aria-hidden="true">↗</span></a>
+        <span class="nav-links">
+          <a class="nav-index" href="{{ '/' | relative_url }}">Home</a>
+          <a class="nav-index" href="{{ '/essays/' | relative_url }}">Essays <span aria-hidden="true">↗</span></a>
+        </span>
       </nav>
       <main id="content">{{ content }}</main>
-      <footer><span>Viswanath Sai Muthu</span><span>{{ site.time | date: '%Y' }}</span></footer>
+      <footer><span>M Viswanath Sai</span><span>{{ site.time | date: '%Y' }}</span></footer>
     </div>
   </body>
 </html>

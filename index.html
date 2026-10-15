@@ -1,30 +1,80 @@
 ---
 layout: default
-title: Essays
+title: M Viswanath Sai (Viswa) - Engineer & founder
+description: M Viswanath Sai (Viswa) is an engineer and founder in San Francisco. Essays, research notes and contact. IIT (BHU) Varanasi, 2026.
+image: /assets/og.png
+permalink: /
 ---
 
 <header class="intro">
-  <p class="folio">Writing / Viswanath Sai Muthu</p>
+  <p class="folio">M Viswanath Sai · Viswa · San Francisco</p>
   <div class="intro-main">
-    <h1>Essays<span aria-hidden="true">.</span></h1>
-    <p class="intro-count"><span>{{ site.posts.size }}</span> {% if site.posts.size == 1 %}essay{% else %}essays{% endif %}</p>
+    <h1>Viswanath Sai<span aria-hidden="true">.</span></h1>
+    <p class="intro-count"><span>Builder</span> &amp; engineer</p>
   </div>
   {% include wave.html %}
 </header>
 
-<div class="list-heading"><span>Published</span><span>Newest first</span></div>
-{% if site.posts.size > 0 %}
-<ol class="essay-list">
-  {% for post in site.posts %}
-  <li>
-    <span class="essay-number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
-    <div class="essay-entry">
-      <a href="{{ post.url | relative_url }}"><span>{{ post.title | escape }}</span><span class="essay-arrow" aria-hidden="true">↗</span></a>
-      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y · %-I:%M %p %Z' }}</time>
-    </div>
-  </li>
-  {% endfor %}
-</ol>
-{% else %}
-<p class="empty">The first essay is still being chosen.</p>
-{% endif %}
+<section class="home-section" id="about">
+  <div class="list-heading"><span>About</span><span>The short version</span></div>
+  <div class="home-block">
+    <p>I'm Viswa - Viswanath Sai, on paper. I build software and companies, and I'm a founder backed by <a href="https://www.joinef.com">Entrepreneurs First</a>. Most recently I co-founded <a href="https://meetfettle.com">Fettle</a>, maintenance intelligence for the people who keep the physical world running.</p>
+    <p>I graduated from IIT (BHU), Varanasi in 2026, where I wrote a master's thesis on alloy optimization. Before founding, I spent my college years deep in open source - maintaining the Prometheus Operator and mentoring in Google Summer of Code.</p>
+  </div>
+</section>
+
+<section class="home-section" id="research">
+  <div class="list-heading"><span>Research notes</span><span>Working hypothesis</span></div>
+  <div class="home-block">
+    <p>A question I keep coming back to: whatever an LLM does is still driven by the next token - no external state changes that. But can we hold a state on top of what the LLM already does - an internal model of what it knows and doesn't know, an epistemic state - and use that abstraction to drive the LLM's behavior? I suspect durable reasoning, emotion and creativity live in that layer around the model, not inside it. Early signals and reading notes, not findings - the thinking-in-progress shows up in my <a href="{{ '/essays/' | relative_url }}">essays</a>.</p>
+  </div>
+</section>
+
+<section class="home-section" id="writing">
+  <div class="list-heading"><span>Writing</span><span><a href="{{ '/essays/' | relative_url }}">All essays ↗</a></span></div>
+  {% if site.posts.size > 0 %}
+  <ol class="essay-list home-essays">
+    {% for post in site.posts limit:3 %}
+    <li>
+      <span class="essay-number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+      <div class="essay-entry">
+        <a href="{{ post.url | relative_url }}"><span>{{ post.title | escape }}</span><span class="essay-arrow" aria-hidden="true">↗</span></a>
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %-d, %Y' }}</time>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="empty">The first essay is still being chosen.</p>
+  {% endif %}
+</section>
+
+<section class="home-section" id="contact">
+  <div class="list-heading"><span>Contact</span><span>Elsewhere</span></div>
+  <ul class="contact-list">
+    <li><a href="mailto:hey@mviswanathsai.com">hey@mviswanathsai.com</a></li>
+    <li><a href="https://github.com/mviswanathsai">GitHub - @mviswanathsai</a></li>
+    <li><a href="https://www.linkedin.com/in/mviswanathsai">LinkedIn - /in/mviswanathsai</a></li>
+  </ul>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "M Viswanath Sai",
+  "alternateName": ["Viswa", "Viswanath Sai Muthu", "mviswanathsai"],
+  "url": "https://mviswanathsai.com/",
+  "email": "mailto:hey@mviswanathsai.com",
+  "description": "Engineer and founder in San Francisco.",
+  "alumniOf": {
+    "@type": "CollegeOrUniversity",
+    "name": "Indian Institute of Technology (BHU), Varanasi"
+  },
+  "sameAs": [
+    "https://github.com/mviswanathsai",
+    "https://www.linkedin.com/in/mviswanathsai",
+    "https://meetfettle.com"
+  ]
+}
+</script>

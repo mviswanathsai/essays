@@ -149,3 +149,17 @@ footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.5r
 @media (prefers-reduced-motion: reduce) {
   .essay-arrow { transition: none; }
 }
+
+/* Portfolio home */
+.nav-links { display: flex; gap: 1.4rem; }
+.home-section { margin: 0 0 4.5rem; }
+.home-block { border-top: 1px solid var(--ink); padding: 1.5rem 0 1rem; }
+.home-block p { margin: 0 0 1.2em; max-width: 40rem; }
+.home-essays { margin-bottom: 0; }
+.contact-list { list-style: none; padding: 1.5rem 0 1rem; margin: 0; border-top: 1px solid var(--ink); }
+.contact-list li { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+.contact-list a { text-decoration: none; color: var(--title); font: 600 1.15rem/1.4 'Fraunces', Georgia, serif; }
+.contact-list a:hover { text-decoration: underline; text-decoration-color: var(--blue); text-underline-offset: .18em; }
+.list-heading a { color: inherit; text-decoration: none; }
+.list-heading a:hover { color: var(--blue); }
+#writing .list-heading a { color: var(--muted); }

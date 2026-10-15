@@ -1,9 +1,22 @@
-# Essays
+# mviswanathsai.com
 
-[Read the essays](https://mviswanathsai.github.io/essays/).
+Portfolio and essays of M Viswanath Sai (Viswa). Static Jekyll site on GitHub
+Pages. The portfolio lives at `/`; essays live under `/essays/`.
 
-A small GitHub Pages site for selected writing. The site lives in its own
-repository; only essays copied here become public.
+## Layout
+
+- `index.html` - portfolio landing page (about, Fettle, research notes, writing, contact)
+- `essays/index.html` - essay index at `/essays/`
+- `_posts/` - essays as plain Markdown, served at `/essays/<title>/`
+- `_layouts/`, `_includes/`, `assets/` - site chrome and styling
+- `obsidian-plugin/` - Obsidian "publish essay" helper (desktop only)
+
+## Custom domain
+
+The site is built for the custom domain `https://mviswanathsai.com`
+(`url`/`baseurl: ""` in `_config.yml`). Until the CNAME is added in the repo's
+GitHub Pages settings and DNS points at GitHub, the Pages build at
+`mviswanathsai.github.io/essays` will not resolve asset links correctly.
 
 ## Publish an essay
 
@@ -42,7 +55,7 @@ For manual publishing, copy one selected Markdown file to
 `_posts/YYYY-MM-DD-short-name.md`, using the date you want shown on the site.
 Put `# The essay title` at the top. No other metadata is needed. GitHub Pages
 takes that heading as the title, removes it from the article body, and lists
-the essay newest first on the home page.
+the essay newest first on the essays page.
 
 Review the copy for private details and local-only links before committing it.
 From this repository:

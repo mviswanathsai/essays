@@ -1,15 +1,24 @@
-title: Viswa
-description: Essays and notes by Viswanath Sai Muthu.
-url: https://mviswanathsai.github.io
-baseurl: /essays
+title: M Viswanath Sai
+description: >-
+  Essays, research notes and projects by M Viswanath Sai (Viswa), engineer and
+  founder in San Francisco.
+url: https://mviswanathsai.com
+baseurl: ""
 timezone: Asia/Kolkata
-permalink: /:title/
+permalink: /essays/:title/
+
+lang: en
+
+author:
+  name: M Viswanath Sai
 
 kramdown:
   hard_wrap: true
 
 plugins:
   - jekyll-titles-from-headings
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
 titles_from_headings:
   collections: true
@@ -21,6 +30,7 @@ defaults:
       type: posts
     values:
       layout: essay
+      author: M Viswanath Sai
 
 exclude:
   - README.md
