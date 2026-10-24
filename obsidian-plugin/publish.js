@@ -82,7 +82,7 @@ async function publishEssay(key, content, { repo = defaultRepo, stateFile = defa
     await git(repo, 'commit', '--only', '-m', `Publish ${title}`, '--', relative);
   }
   await git(repo, 'push');
-  return `https://mviswanathsai.github.io/essays/${name.slice(11, -3)}/`;
+  return `https://mviswanathsai.com/essays/${name.slice(11, -3)}/`;
 }
 
 async function unpublishEssay(key, { repo = defaultRepo, stateFile = defaultState } = {}) {

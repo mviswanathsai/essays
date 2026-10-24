@@ -87,7 +87,7 @@ ${content.slice(frontmatter[0].length)}`;
         await git(repo, "commit", "--only", "-m", `Publish ${title}`, "--", relative);
       }
       await git(repo, "push");
-      return `https://mviswanathsai.github.io/essays/${name.slice(11, -3)}/`;
+      return `https://mviswanathsai.com/essays/${name.slice(11, -3)}/`;
     }
     async function unpublishEssay2(key, { repo = defaultRepo, stateFile = defaultState } = {}) {
       const state = await readState(stateFile);

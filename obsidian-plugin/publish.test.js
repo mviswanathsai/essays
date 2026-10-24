@@ -89,7 +89,7 @@ test('publishes only the chosen note and updates its original URL', async () => 
     const target = path.join(repo, '_posts', state.posts['draft.md']);
     const firstCopy = await fs.readFile(target, 'utf8');
     const publishedAt = firstCopy.match(/^---\ndate: (.+)\n---/)[1];
-    assert.equal(url, `https://mviswanathsai.github.io/essays/${state.posts['draft.md'].slice(11, -3)}/`);
+    assert.equal(url, `https://mviswanathsai.com/essays/${state.posts['draft.md'].slice(11, -3)}/`);
     assert.ok(Date.parse(publishedAt) >= clickedAt && Date.parse(publishedAt) <= Date.now());
     assert.equal(firstCopy, `---\ndate: ${publishedAt}\n---\n\n# First thought\n\nVersion one.\n`);
     assert.equal((await git('-C', repo, 'show', '--pretty=format:', '--name-only', 'HEAD')).stdout.trim(), `_posts/${state.posts['draft.md']}`);

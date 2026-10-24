@@ -1,0 +1,12 @@
+# M Viswanath Sai
+
+> M Viswanath Sai (Viswa) is an engineer and founder in San Francisco. This personal site contains his background, contact details, and essays; its research notes describe thinking in progress, not established findings.
+
+## About and contact
+
+- [Home](/): Viswa’s background, recent work, research interests, and contact details.
+
+## Writing
+
+- [Essays](/essays/): Index of published writing.
+- [Beware, Activity and Productivity are eerily similar](/essays/beware-activity-and-productivity-are-eerily-similar/): A founder’s account of why customer conversations need hypotheses and decision-making, not just activity.
