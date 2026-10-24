@@ -33,5 +33,6 @@ defaults:
       author: M Viswanath Sai
 
 exclude:
+  - AGENTS.md
   - README.md
   - obsidian-plugin
